@@ -1,0 +1,32 @@
+body {
+  -webkit-animation: flashingColors 5s infinite;
+}
+
+@-webkit-keyframes flashingColors {
+  0%   {background-color: pink;}
+  20%  {background-color: yellow;}
+  50%  {background-color: orange;}
+  85%  {background-color: green;}
+  100% {background-color: pink;}
+}
+
+.main-text {
+  font-size: 22px;
+  text-align: center;
+}
+
+.letter {
+  float: left;
+  margin-top: 200px;
+  margin-right: 6px;
+}
+
+.jump {
+  -webkit-animation: jumping 1s;
+}
+
+@-webkit-keyframes jumping {
+  0%   {margin-top: 200px;}
+  35%   {margin-top: 0;}
+  100%   {margin-top: 200px;}
+}
