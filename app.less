@@ -1,5 +1,13 @@
+@import "lesshat";
+
+.clearfix() {
+  content: "";
+  display: block;
+  clear: both;
+}
+
 body {
-  -webkit-animation: flashingColors 5s infinite;
+  .animation(flashingColors 5s infinite);
 }
 
 @-webkit-keyframes flashingColors {
@@ -10,9 +18,13 @@ body {
   100% {background-color: pink;}
 }
 
-.main-text {
+#main_text {
   font-size: 22px;
   text-align: center;
+}
+
+.letters:after {
+  .clearfix();
 }
 
 .letter {
@@ -22,11 +34,29 @@ body {
 }
 
 .jump {
-  -webkit-animation: jumping 1s;
+  .animation(jumping 1s);
 }
 
 @-webkit-keyframes jumping {
   0%   {margin-top: 200px;}
   35%   {margin-top: 0;}
   100%   {margin-top: 200px;}
+}
+
+#oc {
+  width: 4px;
+  height: 4px;
+}
+
+.h {
+  background-color: white;
+}
+
+@-webkit-keyframes fadeDownAnimation {
+  0%   {.transform(translate(0, 0)); opacity: 1;}
+  100% {.transform(translate(0, 200px)); opacity: 0.0;}
+}
+
+.fadedown {
+  .animation(fadeDownAnimation 1s);
 }
