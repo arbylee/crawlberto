@@ -44,6 +44,25 @@ document.getElementById('oc').addEventListener('click', function(){
   };
 });
 
+var nameTextPointer = 0;
+var nameTextOptions = [
+  "Bertron",
+  "Albert",
+  "Bertola",
+  "Birdman",
+  "Albus",
+  "Oberto",
+  "Alberto",
+];
+var nameText = document.getElementById('main_text_name')
+var updateNameText = function(){
+  nameText.textContent = nameTextOptions[nameTextPointer];
+  nameTextPointer = (nameTextPointer + 1) % nameTextOptions.length
+}
+nameText.addEventListener('click', function(){
+  addClassAndRemoveAfter(nameText, 'fadedown', 1000, updateNameText);
+});
+
 var mainTextPointer = 0;
 var mainTextDescriptions = [
   "incredible",
