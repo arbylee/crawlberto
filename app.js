@@ -93,7 +93,9 @@ var addClassAndRemoveAfter = function(element, theClass, timeToRevert, callback)
     element.className = element.className + classWithSpace;
     setTimeout(function(){
       element.className = originalClassName;
-      callback();
+      if(callback){
+        callback();
+      };
     }, timeToRevert)
   }
 }
