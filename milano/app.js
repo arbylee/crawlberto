@@ -26,7 +26,7 @@ var Player = function (state) {
   Phaser.Sprite.call(this, this.game, 400, 550, 'player');
   this.game.add.existing(this);
   this.game.physics.arcade.enable(this);
-
+  this.anchor.setTo(0.5, 0.5);
   this.body.collideWorldBounds = true;
   this.cursors = this.game.input.keyboard.createCursorKeys();
   this.initialHungerLevel = 25;
@@ -39,14 +39,34 @@ Player.prototype.constructor = Player;
 
 Player.prototype.update = function(){
   this.body.velocity.x = 0;
-  if(this.cursors.left.isDown && this.body.x > 0){
-    this.body.velocity.x -= this.moveSpeed;
-  }
-  if(this.cursors.right.isDown && this.body.x < GAME_WIDTH-this.body.width){
-    this.body.velocity.x += this.moveSpeed;
+
+  if(this.game.input.activePointer.isDown){
+    if(this.game.input.x < this.x-5){
+      this.moveLeft();
+    } else if (this.game.input.x > this.x+5){
+      this.moveRight();
+    }
+  } else {
+    if(this.cursors.left.isDown){
+      this.moveLeft();
+    }
+    if(this.cursors.right.isDown){
+      this.moveRight();
+    }
   }
 }
 
+Player.prototype.moveLeft = function(){
+  if(this.body.x > 0){
+    this.body.velocity.x -= this.moveSpeed;
+  }
+}
+
+Player.prototype.moveRight = function(){
+  if(this.body.x < GAME_WIDTH-this.body.width) {
+    this.body.velocity.x += this.moveSpeed;
+  }
+}
 
 Main.prototype = {
   preload: function(){
@@ -144,7 +164,11 @@ GameOver.prototype = {
   create: function(){
     this.game.add.text(220, 240, "Game Over!", {font: "24px Arial", fill: "#FFFFFF"});
     this.game.add.text(180, 340, "You ate " + this.milanosEaten + " milanos!", {font: "24px Arial", fill: "#FFFFFF"});
-    this.game.add.text(150, 440, "Press spacebar to restart", {font: "24px Arial", fill: "#FFFFFF"});
+    this.restartButton = this.game.add.text(110, 440, "Press here or spacebar to restart", {font: "24px Arial", fill: "#FFFFFF"});
+    this.restartButton.inputEnabled = true;
+    this.restartButton.events.onInputDown.add(function(){
+      this.game.state.start('main');
+    }, this)
   },
   update: function(){
     if(this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
