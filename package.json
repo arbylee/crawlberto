@@ -1,0 +1,9 @@
+{
+  "name": "Crawlberto",
+  "devDependencies": {
+    "local-web-server": "^0.5.22"
+  },
+  "scripts": {
+    "start": "ws"
+  }
+}
