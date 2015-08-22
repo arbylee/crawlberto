@@ -1,23 +1,111 @@
 var GAME_WIDTH = 640;
-var GAME_HEIGHT = 600;
+var GAME_HEIGHT = 900;
 var game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, '')
 
-var LEDGE_ONE_Y = 570;
-var LEDGE_TWO_Y = 510;
-var LEDGE_THREE_Y = 450;
-var LEDGE_FOUR_Y = 390;
-var LEDGE_FIVE_Y = 330;
-var LEDGE_SIX_Y = 270;
-var LEDGE_SEVEN_Y = 210;
-var LEDGE_EIGHT_Y = 150;
-var LEDGE_NINE_Y = 90;
-var LEDGE_TEN_Y = 30;
+var PLAYER_SPRITE_WIDTH = 32;
+var PLAYER_SPRITE_HEIGHT = 60;
+
+var LEDGE_ONE_Y = GAME_HEIGHT - PLAYER_SPRITE_HEIGHT/2;
+var LEDGE_TWO_Y = GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2) - PLAYER_SPRITE_HEIGHT;
+var LEDGE_THREE_Y = GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2) - PLAYER_SPRITE_HEIGHT * 2;
+var LEDGE_FOUR_Y = GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2) - PLAYER_SPRITE_HEIGHT * 3;
+var LEDGE_FIVE_Y = GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2) - PLAYER_SPRITE_HEIGHT * 4;
+var LEDGE_SIX_Y = GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2) - PLAYER_SPRITE_HEIGHT * 5;
+var LEDGE_SEVEN_Y = GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2) - PLAYER_SPRITE_HEIGHT * 6;
+var LEDGE_EIGHT_Y = GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2) - PLAYER_SPRITE_HEIGHT * 7;
+var LEDGE_NINE_Y = GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2) - PLAYER_SPRITE_HEIGHT * 8;
+var LEDGE_TEN_Y = GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2) - PLAYER_SPRITE_HEIGHT * 9;
+var LEDGE_ELEVEN_Y = GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2) - PLAYER_SPRITE_HEIGHT * 10;
+var LEDGE_TWELVE_Y = GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2) - PLAYER_SPRITE_HEIGHT * 11;
+var LEDGE_THIRTEEN_Y = GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2) - PLAYER_SPRITE_HEIGHT * 12;
+var LEDGE_FOURTEEN_Y = GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2) - PLAYER_SPRITE_HEIGHT * 13;
+var LEDGE_FIFTEEN_Y = GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2) - PLAYER_SPRITE_HEIGHT * 14;
+
+var LEDGE_MAP = {
+  "1": LEDGE_ONE_Y,
+  "2": LEDGE_TWO_Y,
+  "3": LEDGE_THREE_Y,
+  "4": LEDGE_FOUR_Y,
+  "5": LEDGE_FIVE_Y,
+  "6": LEDGE_SIX_Y,
+  "7": LEDGE_SEVEN_Y,
+  "8": LEDGE_EIGHT_Y,
+  "9": LEDGE_NINE_Y,
+  "10": LEDGE_TEN_Y,
+  "11": LEDGE_ELEVEN_Y,
+  "12": LEDGE_TWELVE_Y,
+  "13": LEDGE_THIRTEEN_Y,
+  "14": LEDGE_FOURTEEN_Y,
+  "15": LEDGE_FIFTEEN_Y
+}
+
+var LEVEL_ONE_PARAMS = {
+  '2': 'birds',
+  '3': 'birds',
+  '4': 'birds',
+  '6': 'birds',
+  '7': 'birds',
+  '8': 'birds',
+  '9': 'birds',
+  '11': 'birds',
+  '12': 'birds',
+  '13': 'birds',
+  '14': 'birds'
+}
+
+var LEVEL_TWO_PARAMS = {
+  '2': 'birds',
+  '3': 'planes',
+  '4': 'planes',
+  '6': 'planes',
+  '7': 'birds',
+  '8': 'birds',
+  '10': 'planes',
+  '11': 'planes',
+  '13': 'planes',
+  '14': 'planes'
+}
+
+var LEVEL_THREE_PARAMS = {
+  '2': 'planes',
+  '3': 'planes',
+  '5': 'birds',
+  '6': 'planes',
+  '7': 'birds',
+  '8': 'planes',
+  '9': 'planes',
+  '10': 'planes',
+  '11': 'birds',
+  '13': 'planes',
+  '14': 'planes',
+}
+
+var LEVEL_FOUR_PARAMS = {
+  '2': 'planes',
+  '3': 'meteors',
+  '4': 'meteors',
+  '5': 'planes',
+  '7': 'planes',
+  '8': 'birds',
+  '9': 'meteors',
+  '10': 'meteors',
+  '12': 'meteors',
+  '13': 'planes',
+  '14': 'meteors'
+}
+
+var LEVEL_PARAMS = [
+  LEVEL_ONE_PARAMS,
+  LEVEL_TWO_PARAMS,
+  LEVEL_THREE_PARAMS,
+  LEVEL_FOUR_PARAMS
+]
 
 var GlobalGame = {};
 
 function Player(state){
   this.game = state.game;
-  Phaser.Sprite.call(this, this.game, 304, 570, 'climber');
+  Phaser.Sprite.call(this, this.game, GAME_WIDTH/2-PLAYER_SPRITE_WIDTH/2, GAME_HEIGHT - (PLAYER_SPRITE_HEIGHT/2), 'climber');
   this.verticalMoveSpeed = 60;
   this.horizontalMoveSpeed = 32;
   this.anchor.setTo(0.5, 0.5);
@@ -39,6 +127,27 @@ Player.prototype.setupControls = function(){
   this.cursors.right.onDown.add(this.moveRight, this);
   this.cursors.up.onDown.add(this.moveUp, this);
   this.cursors.down.onDown.add(this.moveDown, this);
+
+  gameSectionWidth = GAME_WIDTH/3;
+  gameSectionHeight = GAME_HEIGHT/3;
+
+  this.game.input.onDown.add(function() {
+    if (this.game.input.y < gameSectionHeight){
+      this.moveUp();
+    } else if(this.game.input.y > gameSectionHeight*2) {
+      this.moveDown();
+    } else if(this.game.input.y > gameSectionHeight &&
+        this.game.input.y < gameSectionHeight*2 &&
+        this.game.input.x > gameSectionWidth*2) {
+
+      this.moveRight();
+    } else if(this.game.input.y > gameSectionHeight &&
+        this.game.input.y < gameSectionHeight*2 &&
+        this.game.input.x < gameSectionHeight) {
+
+      this.moveLeft();
+    };
+  }, this);
 }
 
 Player.prototype.moveLeft = function(){
@@ -142,11 +251,19 @@ Meteor.prototype.update = function(){
 Meteor.prototype.revive = function(){
   this.body.velocity.x = -this.moveSpeed;
 }
-function Level1() {};
 
-Level1.prototype = {
+function Level() {
+};
+
+Level.prototype = {
+  init: function(levelParams, levelNumber){
+    this.levelParams = levelParams;
+    this.levelNumber = levelNumber;
+  },
   create: function(){
-    this.game.add.tileSprite(0, 0, 640, 600, 'background');
+    this.backgroundSprite = this.game.add.sprite(0, 0, 'background');
+    this.backgroundSprite.width = GAME_WIDTH;
+    this.backgroundSprite.height = GAME_HEIGHT;
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
     this.player = new Player(this);
@@ -155,32 +272,64 @@ Level1.prototype = {
     for (i = 0; i < 20; i++) {
       this.birds.add(new Bird(this));
     }
+    this.planes = this.game.add.group();
+    for (i = 0; i < 20; i++) {
+      this.planes.add(new Plane(this));
+    }
+    this.meteors = this.game.add.group();
+    for (i = 0; i < 20; i++) {
+      this.meteors.add(new Meteor(this));
+    }
+
+    this.obstacleMap = {
+      'birds': this.birds,
+      'planes': this.planes,
+      'meteors': this.meteors
+    }
 
     this.game.physics.arcade.enable(this.player);
+    foo = this.obstacleMap
 
-    this.ledgeTwoLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.birds, LEDGE_TWO_Y);
-    this.ledgeThreeLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.birds, LEDGE_THREE_Y);
-    this.ledgeFourLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.birds, LEDGE_FOUR_Y);
-    this.ledgeFiveLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.birds, LEDGE_FIVE_Y);
-    this.ledgeSixLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.birds, LEDGE_SIX_Y);
-    this.ledgeSevenLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.birds, LEDGE_SEVEN_Y);
-    this.ledgeEightLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.birds, LEDGE_EIGHT_Y);
-    this.ledgeNineLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.birds, LEDGE_NINE_Y);
-
+    for (var ledgeNumber in this.levelParams) {
+      if (this.levelParams.hasOwnProperty(ledgeNumber)) {
+        this.game.time.events.loop(this.game.rnd.between(1100, 2200),
+                                   this.spawnObstacle,
+                                   this,
+                                   this.obstacleMap[this.levelParams[ledgeNumber]],
+                                   LEDGE_MAP[ledgeNumber]);
+      }
+    }
 
     this.startTimer = 3;
-    this.startText = this.game.add.text(GAME_WIDTH/2, GAME_HEIGHT/2, this.startTimer, {font: "16px Arial", fill: "#FFFFFF"});
+    this.startText = this.game.add.text(GAME_WIDTH/2, GAME_HEIGHT/2, this.startTimer, {font: "32px Arial", fill: "#FFFFFF"});
     this.startTimerLoop = this.game.time.events.loop(Phaser.Timer.SECOND, this.updateStartTimer, this);
 
     GlobalGame.backgroundMusic = this.game.add.audio('doopa');
     GlobalGame.backgroundMusic.volume = 0.6;
     GlobalGame.backgroundMusic.loop = true;
     GlobalGame.backgroundMusic.play();
+
+    this.game.input.maxPointers = 1;
+
+    this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    this.game.scale.setResizeCallback(function () {
+        this.game.scale.setResizeCallback(this.resize, this);
+    }, this);
   },
   update: function(){
-    this.game.physics.arcade.overlap(this.player, this.birds, this.playerHitsObstacle, null, this);
-    if(this.player.y <= LEDGE_TEN_Y){
-      this.game.state.start('level2')
+
+    for (var obstacleType in this.obstacleMap) {
+      if (this.obstacleMap.hasOwnProperty(obstacleType)) {
+        this.game.physics.arcade.overlap(this.player, this.obstacleMap[obstacleType], this.playerHitsObstacle, null, this);
+      }
+    }
+    if(this.player.y <= LEDGE_FIFTEEN_Y){
+      var nextLevelNumber = this.levelNumber + 1;
+      if(nextLevelNumber >= LEVEL_PARAMS.length){
+        this.game.state.start('youWin');
+      } else {
+        this.game.state.start('level', true, false, LEVEL_PARAMS[nextLevelNumber], nextLevelNumber)
+      }
     }
   },
   playerHitsObstacle: function(){
@@ -201,225 +350,6 @@ Level1.prototype = {
       this.player.setupControls();
       this.startText.kill();
     }
-  },
-  randomSlow: function(){
-    return this.game.rnd.between(1500, 1900);
-  },
-  randomMedium: function(){
-    return this.game.rnd.between(1100, 1500);
-  }
-};
-
-function Level2() {};
-
-Level2.prototype = {
-  create: function(){
-    this.game.add.tileSprite(0, 0, 640, 600, 'background');
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
-
-    this.player = new Player(this);
-
-    this.birds = this.game.add.group();
-    for (i = 0; i < 20; i++) {
-      this.birds.add(new Bird(this));
-    }
-
-    this.planes = this.game.add.group();
-    for (i = 0; i < 20; i++) {
-      this.planes.add(new Plane(this));
-    }
-
-    this.game.physics.arcade.enable(this.player);
-
-    this.ledgeTwoLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.birds, LEDGE_TWO_Y);
-    this.ledgeThreeLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.planes, LEDGE_THREE_Y);
-    this.ledgeFourLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.planes, LEDGE_FOUR_Y);
-    this.ledgeFiveLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.birds, LEDGE_FIVE_Y);
-    this.ledgeSixLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.planes, LEDGE_SIX_Y);
-    this.ledgeSevenLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.birds, LEDGE_SEVEN_Y);
-    this.ledgeEightLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.birds, LEDGE_EIGHT_Y);
-    this.ledgeNineLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.planes, LEDGE_NINE_Y);
-
-
-    this.startTimer = 3;
-    this.startText = this.game.add.text(GAME_WIDTH/2, GAME_HEIGHT/2, this.startTimer, {font: "16px Arial", fill: "#FFFFFF"});
-    this.startTimerLoop = this.game.time.events.loop(Phaser.Timer.SECOND, this.updateStartTimer, this);
-  },
-  update: function(){
-    this.game.physics.arcade.overlap(this.player, this.birds, this.playerHitsObstacle, null, this);
-    this.game.physics.arcade.overlap(this.player, this.planes, this.playerHitsObstacle, null, this);
-    if(this.player.y <= LEDGE_TEN_Y){
-      this.game.state.start('level3');
-    }
-  },
-  playerHitsObstacle: function(){
-    GlobalGame.backgroundMusic.loop = false;
-    GlobalGame.backgroundMusic.stop();
-    this.game.state.start('gameOver')
-  },
-  spawnObstacle: function(obstacles, ledge){
-    var obstacle = obstacles.getFirstDead();
-    obstacle.reset(GAME_WIDTH+obstacle.body.width, ledge-obstacle.body.height/2)
-    obstacle.revive();
-  },
-  updateStartTimer: function(){
-    this.startTimer -= 1;
-    this.startText.text = this.startTimer;
-    if(this.startTimer <= 0){
-      this.game.time.events.remove(this.startTimerLoop);
-      this.player.setupControls();
-      this.startText.kill();
-    }
-  },
-  randomSlow: function(){
-    return this.game.rnd.between(1500, 1900);
-  },
-  randomMedium: function(){
-    return this.game.rnd.between(1000, 1500);
-  }
-};
-
-function Level3() {};
-
-Level3.prototype = {
-  create: function(){
-    this.game.add.tileSprite(0, 0, 640, 600, 'background');
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
-
-    this.player = new Player(this);
-
-    this.birds = this.game.add.group();
-    for (i = 0; i < 20; i++) {
-      this.birds.add(new Bird(this));
-    }
-
-    this.planes = this.game.add.group();
-    for (i = 0; i < 20; i++) {
-      this.planes.add(new Plane(this));
-    }
-
-    this.game.physics.arcade.enable(this.player);
-
-    this.ledgeTwoLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.planes, LEDGE_TWO_Y);
-    this.ledgeThreeLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.planes, LEDGE_THREE_Y);
-    this.ledgeFourLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.planes, LEDGE_FOUR_Y);
-    this.ledgeFiveLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.birds, LEDGE_FIVE_Y);
-    this.ledgeSixLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.planes, LEDGE_SIX_Y);
-    this.ledgeSevenLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.birds, LEDGE_SEVEN_Y);
-    this.ledgeEightLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.planes, LEDGE_EIGHT_Y);
-    this.ledgeNineLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.planes, LEDGE_NINE_Y);
-
-
-    this.startTimer = 3;
-    this.startText = this.game.add.text(GAME_WIDTH/2, GAME_HEIGHT/2, this.startTimer, {font: "16px Arial", fill: "#FFFFFF"});
-    this.startTimerLoop = this.game.time.events.loop(Phaser.Timer.SECOND, this.updateStartTimer, this);
-  },
-  update: function(){
-    this.game.physics.arcade.overlap(this.player, this.birds, this.playerHitsObstacle, null, this);
-    this.game.physics.arcade.overlap(this.player, this.planes, this.playerHitsObstacle, null, this);
-    if(this.player.y <= LEDGE_TEN_Y){
-      this.game.state.start('level4');
-    }
-  },
-  playerHitsObstacle: function(){
-    GlobalGame.backgroundMusic.loop = false;
-    GlobalGame.backgroundMusic.stop();
-    this.game.state.start('gameOver')
-  },
-  spawnObstacle: function(obstacles, ledge){
-    var obstacle = obstacles.getFirstDead();
-    obstacle.reset(GAME_WIDTH+obstacle.body.width, ledge-obstacle.body.height/2)
-    obstacle.revive();
-  },
-  updateStartTimer: function(){
-    this.startTimer -= 1;
-    this.startText.text = this.startTimer;
-    if(this.startTimer <= 0){
-      this.game.time.events.remove(this.startTimerLoop);
-      this.player.setupControls();
-      this.startText.kill();
-    }
-  },
-  randomSlow: function(){
-    return this.game.rnd.between(1300, 1800);
-  },
-  randomMedium: function(){
-    return this.game.rnd.between(900, 1400);
-  }
-};
-
-function Level4() {};
-
-Level4.prototype = {
-  create: function(){
-    this.game.add.tileSprite(0, 0, 640, 600, 'background');
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
-
-    this.player = new Player(this);
-
-    this.birds = this.game.add.group();
-    for (i = 0; i < 20; i++) {
-      this.birds.add(new Bird(this));
-    }
-
-    this.planes = this.game.add.group();
-    for (i = 0; i < 20; i++) {
-      this.planes.add(new Plane(this));
-    }
-
-    this.meteors = this.game.add.group();
-    for (i = 0; i < 20; i++) {
-      this.meteors.add(new Meteor(this));
-    }
-
-    this.game.physics.arcade.enable(this.player);
-
-    this.ledgeTwoLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.planes, LEDGE_TWO_Y);
-    this.ledgeThreeLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.meteors, LEDGE_THREE_Y);
-    this.ledgeFourLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.meteors, LEDGE_FOUR_Y);
-    this.ledgeFiveLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.planes, LEDGE_FIVE_Y);
-    this.ledgeSixLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.birds, LEDGE_SIX_Y);
-    this.ledgeSevenLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.planes, LEDGE_SEVEN_Y);
-    this.ledgeEightLoop = this.game.time.events.loop(this.randomMedium(), this.spawnObstacle, this, this.birds, LEDGE_EIGHT_Y);
-    this.ledgeNineLoop = this.game.time.events.loop(this.randomSlow(), this.spawnObstacle, this, this.meteors, LEDGE_NINE_Y);
-
-
-    this.startTimer = 3;
-    this.startText = this.game.add.text(GAME_WIDTH/2, GAME_HEIGHT/2, this.startTimer, {font: "16px Arial", fill: "#FFFFFF"});
-    this.startTimerLoop = this.game.time.events.loop(Phaser.Timer.SECOND, this.updateStartTimer, this);
-  },
-  update: function(){
-    this.game.physics.arcade.overlap(this.player, this.birds, this.playerHitsObstacle, null, this);
-    this.game.physics.arcade.overlap(this.player, this.planes, this.playerHitsObstacle, null, this);
-    this.game.physics.arcade.overlap(this.player, this.meteors, this.playerHitsObstacle, null, this);
-    if(this.player.y <= LEDGE_TEN_Y){
-      this.game.state.start('youWin');
-    }
-  },
-  playerHitsObstacle: function(){
-    GlobalGame.backgroundMusic.loop = false;
-    GlobalGame.backgroundMusic.stop();
-    this.game.state.start('gameOver')
-  },
-  spawnObstacle: function(obstacles, ledge){
-    var obstacle = obstacles.getFirstDead();
-    obstacle.reset(GAME_WIDTH+obstacle.body.width, ledge-obstacle.body.height/2)
-    obstacle.revive();
-  },
-  updateStartTimer: function(){
-    this.startTimer -= 1;
-    this.startText.text = this.startTimer;
-    if(this.startTimer <= 0){
-      this.game.time.events.remove(this.startTimerLoop);
-      this.player.setupControls();
-      this.startText.kill();
-    }
-  },
-  randomSlow: function(){
-    return this.game.rnd.between(1300, 1800);
-  },
-  randomMedium: function(){
-    return this.game.rnd.between(900, 1400);
   }
 };
 
@@ -437,7 +367,7 @@ Preloader.prototype = {
   create: function(){
   },
   update: function(){
-    this.game.state.start('level1');
+    this.game.state.start('level', true, false, LEVEL_PARAMS[0], 0);
   }
 }
 
@@ -446,11 +376,15 @@ function GameOver(){};
 GameOver.prototype = {
   create: function(){
     this.game.add.text(170, 200, "YOU LOSE. TRY HARDER NEXT TIME", {font: "16px Arial", fill: "#FFFFFF"})
+    this.game.input.onDown.add(this.restartGame);
   },
   update: function(){
     if(this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
-      this.game.state.start('level1');
+      this.restartGame();
     };
+  },
+  restartGame: function(){
+    this.game.state.start('level', true, false, LEVEL_PARAMS[0], 0);
   }
 }
 
@@ -461,18 +395,19 @@ YouWin.prototype = {
     this.game.add.text(250, 200, "CRUSH YOUR GOALS", {font: "16px Arial", fill: "#FFFFFF"})
     GlobalGame.backgroundMusic.loop = false;
     GlobalGame.backgroundMusic.stop();
+    this.game.input.onDown.add(this.restartGame);
   },
   update: function(){
     if(this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
-      this.game.state.start('level1');
+      this.restartGame();
     };
+  },
+  restartGame: function(){
+    this.game.state.start('level', true, false, LEVEL_PARAMS[0], 0);
   }
 }
 
-game.state.add('level1', Level1);
-game.state.add('level2', Level2);
-game.state.add('level3', Level3);
-game.state.add('level4', Level4);
+game.state.add('level', Level);
 game.state.add('gameOver', GameOver);
 game.state.add('preloader', Preloader);
 game.state.add('youWin', YouWin);
