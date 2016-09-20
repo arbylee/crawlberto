@@ -4,6 +4,10 @@
     "local-web-server": "^0.5.22"
   },
   "scripts": {
-    "start": "ws"
+    "start": "ws",
+    "build": "lessc app.less > app.css"
+  },
+  "dependencies": {
+    "less": "^2.7.1"
   }
 }
